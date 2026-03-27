@@ -11,7 +11,8 @@ Claude Code skills for working with CIDOC-CRM ontology, LINCS (Linked Infrastruc
 | [lincs-validate.md](lincs-validate.md) | `/lincs-validate` | Model validator — 9-category checklist producing PASS/WARN/FAIL report against LINCS requirements |
 | [cidoc-to-rdf.md](cidoc-to-rdf.md) | `/cidoc-to-rdf` | Neo4j → RDF/Turtle converter — 8 translation rules for namespace mapping, relationship property reification, authority URI insertion |
 | [lincs-sparql.md](lincs-sparql.md) | `/lincs-sparql` | SPARQL query builder — 10 templates for the LINCS Fuseki endpoint plus local census data queries and LINCS↔census bridging queries |
-| [person-disambig.md](person-disambig.md) | `/person-disambig` | Wikidata entity disambiguation — match person NER clusters to Wikidata QIDs using the Wikidata MCP server |
+| [person-disambig.md](person-disambig.md) | `/person-disambig` | Wikidata person disambiguation — match person NER clusters to Wikidata QIDs using the Wikidata MCP server |
+| [place-disambig.md](place-disambig.md) | `/place-disambig` | Wikidata place disambiguation — ground geographic entities, toponyms, and colonial place names to Wikidata QIDs |
 
 ## Prerequisites: Wikidata MCP Server
 
@@ -81,6 +82,8 @@ The `person-disambig` skill requires the [mcp-wikidata](https://github.com/zzaeb
 /lincs-sparql find all people born in Saskatchewan
 /person-disambig 100
 /person-disambig status
+/place-disambig 50
+/place-disambig verify
 ```
 
 ### As reference documents
