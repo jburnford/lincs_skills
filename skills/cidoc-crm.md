@@ -266,14 +266,14 @@ When building knowledge graphs from primary historical sources (OCR'd documents,
 
 # Not sure if this should be the same timespan from the first example if so replace with `<http://temp.lincsproject.ca/datasetID/riel_birth_event/timespan>` - data is different here than there.
 <http://temp.lincsproject.ca/datasetID/riel_birth_event/birth_date_riel_assignment/timespan> a crm:E52_Time-Span ;
-        rdfs:label "circa 1844"@en ;
-        crm:P82_at_some_time_within "c. 1844"^^xsd:string ;
-        crm:P82a_begin_of_the_begin "1843-01-01T00:00:00"^^xsd:dateTime ;
-        crm:P82b_end_of_the_end "1845-12-31T23:59:59"^^xsd:dateTime .
+    rdfs:label "circa 1844"@en ;
+    crm:P82_at_some_time_within "c. 1844"^^xsd:string ;
+    crm:P82a_begin_of_the_begin "1843-01-01T00:00:00"^^xsd:dateTime ;
+    crm:P82b_end_of_the_end "1845-12-31T23:59:59"^^xsd:dateTime .
 
 
 <http://temp.lincsproject.ca/datasetID/riel_birth_event/birth_date_riel_assignment/motivation> a crm:E73_Information_Object ;
-        rdfs:label "OCR'd census record (poor quality)"@en .
+    rdfs:label "OCR'd census record (poor quality)"@en .
 
 ```
 
