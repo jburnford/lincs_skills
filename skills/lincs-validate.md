@@ -109,7 +109,7 @@ Check that:
 ### Category 8: Document Modeling
 
 Check that:
-- Physical originals use `crm:E73_Information_Object`
+- Conceptual Content/Immaterial Objects use `crm:E73_Information_Object`
 - Digital surrogates use `crmdig:D1_Digital_Object`
 - Digital-to-physical link uses `P130_shows_features_of` or `P130i_features_are_also_found_on`
 - Subject link uses `P129_is_about`
@@ -120,7 +120,7 @@ Check that:
 
 If validating a Neo4j property graph, flag:
 - **Relationship properties**: Any edge with attributes (not expressible in basic RDF)
-- **Custom relationship types**: Any type not in CRM/CRMgeo/CRMdig specs
+- **Custom relationship types**: Any type not in CRM/CRMdig specs
 - **Missing namespaces**: Node labels without proper URI prefixes
 - **Bare string properties**: Values that should route through E33_E41 or E42 patterns
 - **Multiple labels**: Neo4j multi-label nodes need explicit `rdf:type` for each class
