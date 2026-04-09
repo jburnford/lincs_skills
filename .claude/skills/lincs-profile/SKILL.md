@@ -28,6 +28,7 @@ When generating Turtle from this profile, always include these exact prefix decl
 @prefix geo: <http://sws.geonames.org/> .
 @prefix viaf: <http://viaf.org/viaf/> .
 @prefix wikidata: <http://www.wikidata.org/entity/> .
+# TODO: Replace these LINCS vocabulary namespace URIs with the correct ones
 @prefix lincs: <https://lincs.digital/> .
 @prefix biography: <https://lincs.digital/vocabulary/biography/> .
 @prefix event: <https://lincs.digital/vocabulary/event/> .
@@ -55,7 +56,7 @@ Do NOT guess or hallucinate namespace URIs. The exact URIs above are authoritati
 |---------|-----------|
 | Historical Canadian Persons | `<http://graph.lincsproject.ca/hist-canada/hist-cdns>` |
 | Historical Indian Affairs Agents | `<http://graph.lincsproject.ca/hist-canada/ind-affairs>` |
-| Cabinet Conclusions | `<http://graph.lincsproject.ca/hist-canada/cab-con>` |
+| Cabinet Conclusions | `<http://graph.lincsproject.ca/hist-canada/cabinet-conclusions>` |
 
 ### Data Archives
 - Historical Canadians: `https://doi.org/10.5683/SP3/7ESLQ0`
@@ -71,7 +72,7 @@ Do NOT guess or hallucinate namespace URIs. The exact URIs above are authoritati
 | Types/Concepts | Wikidata | `http://www.wikidata.org/entity/{id}` | `wikidata:Q327333` (govt agency) |
 | Archival types | Getty AAT | `http://vocab.getty.edu/aat/{id}` | `aat:300189759` (archival fonds) |
 | Languages | Lexvo | `http://lexvo.org/id/iso639-3/{code}` | `lexvo:eng` |
-| Novel entities | LINCS-minted | `https://lincs.digital/{id}` | `lincs:uHpXmbg9zxY` |
+| Novel entities | LINCS-minted | TODO: correct LINCS URI pattern | `lincs:uHpXmbg9zxY` |
 
 If no external authority exists for an entity, mint a LINCS URI.
 

@@ -28,14 +28,13 @@ GRAPH <http://graph.lincsproject.ca/hist-canada/hist-cdns>
 GRAPH <http://graph.lincsproject.ca/hist-canada/ind-affairs>
 
 # Cabinet Conclusions
-GRAPH <http://graph.lincsproject.ca/hist-canada/cab-con>
+GRAPH <http://graph.lincsproject.ca/hist-canada/cabinet-conclusions>
 ```
 
 ## Standard Prefixes
 
 ```sparql
 PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-PREFIX crmgeo: <http://www.ics.forth.gr/isl/CRMgeo/>
 PREFIX crmdig: <http://www.ics.forth.gr/isl/CRMdig/>
 PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -44,6 +43,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX geo: <http://sws.geonames.org/>
 PREFIX viaf: <http://viaf.org/viaf/>
 PREFIX wikidata: <http://www.wikidata.org/entity/>
+# TODO: Replace these LINCS vocabulary namespace URIs with the correct ones
 PREFIX lincs: <https://lincs.digital/>
 PREFIX biography: <https://lincs.digital/vocabulary/biography/>
 PREFIX event: <https://lincs.digital/vocabulary/event/>
@@ -205,7 +205,7 @@ ORDER BY ?agencyName ?startDate
 # Use YEAR() to bin by calendar year for historical analysis.
 SELECT ?year ?topic ?topicLabel (COUNT(?meeting) AS ?meetings)
 WHERE {
-  GRAPH <http://graph.lincsproject.ca/hist-canada/cab-con> {
+  GRAPH <http://graph.lincsproject.ca/hist-canada/cabinet-conclusions> {
     ?meeting a crm:E7_Activity ;
              crm:P21_had_general_purpose ?topic ;
              crm:P4_has_time-span ?ts .
@@ -240,7 +240,7 @@ WHERE {
       BIND("Indian Affairs" AS ?dataset)
     }
   } UNION {
-    GRAPH <http://graph.lincsproject.ca/hist-canada/cab-con> {
+    GRAPH <http://graph.lincsproject.ca/hist-canada/cabinet-conclusions> {
       ?person a crm:E21_Person ; rdfs:label ?name .
       BIND("Cabinet Conclusions" AS ?dataset)
     }
@@ -263,7 +263,7 @@ WHERE {
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
 
-  ?presence crmgeo:P166_was_a_presence_of ?place .
+  ?presence crm:P166_was_a_presence_of ?place .
   ?place rdfs:label ?placeName .
 
   ?varType rdfs:label ?variable .
@@ -289,7 +289,7 @@ WHERE {
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
 
-  ?presence crmgeo:P166_was_a_presence_of ?place .
+  ?presence crm:P166_was_a_presence_of ?place .
   ?place rdfs:label "Westmeath"@en .
 
   ?dim crm:P90_has_value ?population .
@@ -322,7 +322,7 @@ WHERE {
                crm:P2_has_type base:VAR_POP_XX_N ;
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
-  ?presence crmgeo:P166_was_a_presence_of ?localPlace .
+  ?presence crm:P166_was_a_presence_of ?localPlace .
   ?dim crm:P90_has_value ?population .
   ?ts crm:P82_at_some_time_within ?censusYear .
 }
@@ -352,7 +352,7 @@ WHERE {
                crm:P2_has_type base:VAR_POP_XX_N ;
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
-  ?presence crmgeo:P166_was_a_presence_of ?localPlace .
+  ?presence crm:P166_was_a_presence_of ?localPlace .
   ?dim crm:P90_has_value ?population .
   ?ts crm:P82_at_some_time_within ?censusYear .
 }
