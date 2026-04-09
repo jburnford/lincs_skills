@@ -31,6 +31,7 @@ When generating Turtle from this profile, always include these exact prefix decl
 @prefix lincs: <http://id.lincsproject.ca/> .
 @prefix biography: <http://id.lincsproject.ca/biography/> .
 @prefix event: <http://id.lincsproject.ca/event/> .
+@prefix edit: <http://id.lincsproject.ca/edit/> .
 @prefix identity: <http://id.lincsproject.ca/identity/> .
 @prefix occupation: <http://id.lincsproject.ca/occupation/> .
 @prefix aat: <http://vocab.getty.edu/aat/> .
@@ -60,7 +61,7 @@ Do NOT guess or hallucinate namespace URIs. The exact URIs above are authoritati
 ### Data Archives
 - Historical Canadians: `https://doi.org/10.5683/SP3/7ESLQ0`
 
-## Authority Files (REQUIRED for LINCS Compatibility)
+## Authorities (REQUIRED for LINCS Compatibility)
 
 | Entity Type | Authority | URI Pattern | Example |
 |-------------|-----------|-------------|---------|
@@ -83,6 +84,8 @@ If no external authority exists for an entity, mint a LINCS URI.
 | Event | `event:` | Event types | `event:OccupationEvent` |
 | Identity | `identity:` | Gender/identity | `identity:woman`, `identity:man` |
 | Occupation | `occupation:` | Occupation types | `occupation:teacher`, `occupation:author` |
+| Editing | `edit:` | Certainty/Precision types (low, medium, high, unknown) | `edit:precisionHigh`, `edit:certaintyMedium`, `edit:certaintyUnknown` |
+| Context | `context:` | Context/Annotation types | `context:BiographyContext`, `context:BirthContext`, `context:violenceContext` |
 
 ## The 8 Reusable Graph Patterns
 

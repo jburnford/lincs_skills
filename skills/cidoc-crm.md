@@ -97,7 +97,7 @@ Current Version: 7.3.1 (there is NO version 2.0 — version history goes 3.x →
 | P141_assigned | E13 | E1 | Attribute value assigned |
 | P143_joined | E85 | E39 | Joining added this actor |
 | P144_joined_with | E85 | E74 | Joining added to this group |
-| P168_place_is_defined_by | E53 | `geo:wktLiteral` or xsd:string | WKT coordinate geometry. Use `"POINT(lon lat)"^^geo:wktLiteral` for GeoSPARQL-compatible triplestores. Use `"POINT(lon lat)"^^xsd:string` for simpler deployments. For polygons: `"POLYGON((lon1 lat1, lon2 lat2, ...))"^^geo:wktLiteral`. |
+| P168_place_is_defined_by | E53 | Use `"POINT(lon lat)"@en`, For polygons: `"POLYGON((lon1 lat1, lon2 lat2, ...))"@en`. |
 | P190_has_symbolic_content | E90 | xsd:string | Literal string value |
 
 ## Golden Pattern: The Event-Centric Model
@@ -167,8 +167,8 @@ base:MEAS_ON082003_1871_POP a crm:E16_Measurement ;
         crm:P82a_begin_of_the_begin "1871-01-01T00:00:00"^^xsd:dateTime ;
         crm:P82b_end_of_the_end "1871-12-31T23:59:59"^^xsd:dateTime ] .
 
-# The temporal presence (CRMgeo — note the namespace)
-base:ON082003_1871 a crmgeo:E93_Presence ;
+# The temporal presence
+base:ON082003_1871 a crm:E93_Presence ;
     rdfs:label "Westmeath presence (1871)"@en ;
     crm:P166_was_a_presence_of base:PLACE_ON142032 .
 
@@ -189,9 +189,9 @@ base:PLACE_ON142032 a crm:E53_Place ;
 | P132_spatiotemporally_overlaps_with | Property | E92 → E92 (two presences overlap in space-time) |
 | P134_continued | Property | E93 → E93 (temporal continuity between presences) |
 
-### When to Use CRMgeo vs. Core CRM
+### When to Use E93_Presence vs. E53_Place
 
-Use CRMgeo (E93_Presence) when:
+Use  E93_Presence when:
 - Place boundaries change over time and you need to track each configuration
 - You need to record spatial overlap between temporal snapshots
 - You're building a historical GIS with time-scoped geometries
@@ -281,7 +281,7 @@ When asked "how should I model X?", follow this decision tree:
 1. **Is it a person?** → E21_Person (link to VIAF/Wikidata)
 2. **Is it a group/organization?** → E74_Group
 3. **Is it a place?** → E53_Place (link to GeoNames)
-4. **Does the place change over time?** → Add CRMgeo E93_Presence per period
+4. **Does the place change over time?** → Add E93_Presence per period
 5. **Is it something that happened?** → E7_Activity or more specific event subclass
 6. **Is it a birth/death?** → E67_Birth / E69_Death
 7. **Is it a group forming/ending?** → E66_Formation / E68_Dissolution

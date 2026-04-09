@@ -35,7 +35,6 @@ GRAPH <http://graph.lincsproject.ca/hist-canada/cabinet-conclusions>
 
 ```sparql
 PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-PREFIX crmgeo: <http://www.ics.forth.gr/isl/CRMgeo/>
 PREFIX crmdig: <http://www.ics.forth.gr/isl/CRMdig/>
 PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -279,7 +278,7 @@ ORDER BY ?person
 For querying your Neo4j CIDOC-CRM census data if serialized to RDF:
 
 ```sparql
-PREFIX base: <http://example.org/chgis/>
+PREFIX temp: <http://temp.lincsproject.ca/hgis/>
 
 SELECT ?place ?placeName ?year ?variable ?value ?unit
 WHERE {
@@ -289,7 +288,7 @@ WHERE {
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
 
-  ?presence crmgeo:P166_was_a_presence_of ?place .
+  ?presence crm:P166_was_a_presence_of ?place .
   ?place rdfs:label ?placeName .
 
   ?varType rdfs:label ?variable .
@@ -315,7 +314,7 @@ WHERE {
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
 
-  ?presence crmgeo:P166_was_a_presence_of ?place .
+  ?presence crm:P166_was_a_presence_of ?place .
   ?place rdfs:label "Westmeath"@en .
 
   ?dim crm:P90_has_value ?population .
@@ -352,7 +351,7 @@ WHERE {
                crm:P2_has_type base:VAR_POP_XX_N ;
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
-  ?presence crmgeo:P166_was_a_presence_of ?localPlace .
+  ?presence crm:P166_was_a_presence_of ?localPlace .
   ?dim crm:P90_has_value ?population .
   ?ts crm:P82_at_some_time_within ?censusYear .
   }
@@ -383,7 +382,7 @@ WHERE {
                crm:P2_has_type base:VAR_POP_XX_N ;
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
-  ?presence crmgeo:P166_was_a_presence_of ?localPlace .
+  ?presence crm:P166_was_a_presence_of ?localPlace .
   ?dim crm:P90_has_value ?population .
   ?ts crm:P82_at_some_time_within ?censusYear .
 }
