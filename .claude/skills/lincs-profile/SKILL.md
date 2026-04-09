@@ -25,14 +25,15 @@ When generating Turtle from this profile, always include these exact prefix decl
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix geo: <http://sws.geonames.org/> .
+@prefix geonames: <http://sws.geonames.org/> .
 @prefix viaf: <http://viaf.org/viaf/> .
 @prefix wikidata: <http://www.wikidata.org/entity/> .
-@prefix lincs: <https://lincs.digital/> .
-@prefix biography: <https://lincs.digital/vocabulary/biography/> .
-@prefix event: <https://lincs.digital/vocabulary/event/> .
-@prefix identity: <https://lincs.digital/vocabulary/identity/> .
-@prefix occupation: <https://lincs.digital/vocabulary/occupation/> .
+@prefix lincs: <http://id.lincsproject.ca/> .
+@prefix biography: <http://id.lincsproject.ca/biography/> .
+@prefix event: <http://id.lincsproject.ca/event/> .
+@prefix edit: <http://id.lincsproject.ca/edit/> .
+@prefix identity: <http://id.lincsproject.ca/identity/> .
+@prefix occupation: <http://id.lincsproject.ca/occupation/> .
 @prefix aat: <http://vocab.getty.edu/aat/> .
 @prefix lexvo: <http://lexvo.org/id/iso639-3/> .
 ```
@@ -55,23 +56,23 @@ Do NOT guess or hallucinate namespace URIs. The exact URIs above are authoritati
 |---------|-----------|
 | Historical Canadian Persons | `<http://graph.lincsproject.ca/hist-canada/hist-cdns>` |
 | Historical Indian Affairs Agents | `<http://graph.lincsproject.ca/hist-canada/ind-affairs>` |
-| Cabinet Conclusions | `<http://graph.lincsproject.ca/hist-canada/cab-con>` |
+| Cabinet Conclusions | `<http://graph.lincsproject.ca/hist-canada/cabinet-conclusions>` |
 
 ### Data Archives
 - Historical Canadians: `https://doi.org/10.5683/SP3/7ESLQ0`
 
-## Authority Files (REQUIRED for LINCS Compatibility)
+## Authorities (REQUIRED for LINCS Compatibility)
 
 | Entity Type | Authority | URI Pattern | Example |
 |-------------|-----------|-------------|---------|
 | People | VIAF | `http://viaf.org/viaf/{id}` | `viaf:104461457` (Oronhyatekha) |
 | People (alt) | Wikidata | `http://www.wikidata.org/entity/{id}` | `wikidata:Q7103784` |
-| Places | GeoNames | `http://sws.geonames.org/{id}/` | `geo:6174041` (Victoria, BC) |
+| Places | GeoNames | `http://sws.geonames.org/{id}/` | `geonames:6174041/` (Victoria, BC) |
 | Places (alt) | Wikidata | `http://www.wikidata.org/entity/{id}` | `wikidata:Q2166` |
 | Types/Concepts | Wikidata | `http://www.wikidata.org/entity/{id}` | `wikidata:Q327333` (govt agency) |
 | Archival types | Getty AAT | `http://vocab.getty.edu/aat/{id}` | `aat:300189759` (archival fonds) |
 | Languages | Lexvo | `http://lexvo.org/id/iso639-3/{code}` | `lexvo:eng` |
-| Novel entities | LINCS-minted | `https://lincs.digital/{id}` | `lincs:uHpXmbg9zxY` |
+| Novel entities | LINCS-minted | `http://id.lincsproject.ca/{id}` | `lincs:uHpXmbg9zxY` |
 
 If no external authority exists for an entity, mint a LINCS URI.
 
@@ -83,6 +84,8 @@ If no external authority exists for an entity, mint a LINCS URI.
 | Event | `event:` | Event types | `event:OccupationEvent` |
 | Identity | `identity:` | Gender/identity | `identity:woman`, `identity:man` |
 | Occupation | `occupation:` | Occupation types | `occupation:teacher`, `occupation:author` |
+| Editing | `edit:` | Certainty/Precision types (low, medium, high, unknown) | `edit:precisionHigh`, `edit:certaintyMedium`, `edit:certaintyUnknown` |
+| Context | `context:` | Context/Annotation types | `context:BiographyContext`, `context:BirthContext`, `context:violenceContext` |
 
 ## The 8 Reusable Graph Patterns
 
@@ -197,14 +200,14 @@ Common historical date qualifiers and their suggested bounds:
 <birth_uri> a crm:E67_Birth ;
     rdfs:label "Birth of Person Name"@en ;
     crm:P98_brought_into_life <person_uri> ;
-    crm:P7_took_place_at <geo:NNNNNNN> ;     # Pattern 4
+    crm:P7_took_place_at <geonames:NNNNNNN/> ;     # Pattern 4
     crm:P4_has_time-span <birth_timespan> .    # Pattern 5
 
 # Death
 <death_uri> a crm:E69_Death ;
     rdfs:label "Death of Person Name"@en ;
     crm:P100_was_death_of <person_uri> ;
-    crm:P7_took_place_at <geo:NNNNNNN> ;
+    crm:P7_took_place_at <geonames:NNNNNNN/> ;
     crm:P4_has_time-span <death_timespan> .
 
 # Occupation
@@ -214,7 +217,7 @@ Common historical date qualifiers and their suggested bounds:
     crm:P2_has_type event:OccupationEvent ;
     crm:P2_has_type occupation:teacher ;
     crm:P4_has_time-span <occ_timespan> ;
-    crm:P7_took_place_at <geo:NNNNNNN> .
+    crm:P7_took_place_at <geonames:NNNNNNN/> .
 
 # Marriage (as group joining)
 <marriage_uri> a crm:E85_Joining ;
@@ -222,7 +225,7 @@ Common historical date qualifiers and their suggested bounds:
     crm:P143_joined <person_uri> ;
     crm:P144_joined_with <marriage_group_uri> ;
     crm:P4_has_time-span <marriage_timespan> ;
-    crm:P7_took_place_at <geo:NNNNNNN> .
+    crm:P7_took_place_at <geonames:NNNNNNN/> .
 <marriage_group_uri> a crm:E74_Group ;
     rdfs:label "Marriage group of Person A and Person B"@en .
 
@@ -256,7 +259,7 @@ Common historical date qualifiers and their suggested bounds:
     crm:P2_has_type event:OccupationEvent ;
     crm:P2_has_type <specific_occupation_type> ;
     crm:P4_has_time-span <timespan> ;
-    crm:P7_took_place_at <geo:NNNNNNN> .
+    crm:P7_took_place_at <geonames:NNNNNNN/> .
 ```
 
 ## Government Event Modeling (Cabinet Conclusions Pattern)
@@ -268,7 +271,7 @@ Common historical date qualifiers and their suggested bounds:
     rdfs:label "Cabinet meeting of 1944-06-06"@en ;
     crm:P14_carried_out_by <ministry_uri> ;
     crm:P21_had_general_purpose <topic_uri> ;
-    crm:P7_took_place_at geo:6094817 ;  # Ottawa
+    crm:P7_took_place_at geonames:6094817/ ;  # Ottawa
     crm:P4_has_time-span <timespan> .
 
 # Role-qualified participation (uses PC14 property class)
@@ -305,12 +308,12 @@ Common historical date qualifiers and their suggested bounds:
 # Text fragment
 <text_fragment> a crm:E73_Information_Object ;
     crm:P190_has_symbolic_content "was born in Halifax"^^xsd:string ;
-    crm:P67_refers_to <geo:6324729> .  # Halifax
+    crm:P67_refers_to <geonames:6324729/> .  # Halifax
 
 # Web Annotation linking text to entity
 <annotation_uri> a oa:Annotation ;
     oa:hasTarget <text_fragment> ;
-    oa:hasBody <geo:6324729> ;
+    oa:hasBody <geonames:6324729/> ;
     oa:motivatedBy oa:identifying .
 ```
 

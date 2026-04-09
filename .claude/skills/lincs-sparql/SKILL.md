@@ -28,31 +28,30 @@ GRAPH <http://graph.lincsproject.ca/hist-canada/hist-cdns>
 GRAPH <http://graph.lincsproject.ca/hist-canada/ind-affairs>
 
 # Cabinet Conclusions
-GRAPH <http://graph.lincsproject.ca/hist-canada/cab-con>
+GRAPH <http://graph.lincsproject.ca/hist-canada/cabinet-conclusions>
 ```
 
 ## Standard Prefixes
 
 ```sparql
 PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
-PREFIX crmgeo: <http://www.ics.forth.gr/isl/CRMgeo/>
 PREFIX crmdig: <http://www.ics.forth.gr/isl/CRMdig/>
 PREFIX oa: <http://www.w3.org/ns/oa#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
-PREFIX geo: <http://sws.geonames.org/>
+PREFIX geonames: <http://sws.geonames.org/>
 PREFIX viaf: <http://viaf.org/viaf/>
 PREFIX wikidata: <http://www.wikidata.org/entity/>
-PREFIX lincs: <https://lincs.digital/>
-PREFIX biography: <https://lincs.digital/vocabulary/biography/>
-PREFIX event: <https://lincs.digital/vocabulary/event/>
-PREFIX identity: <https://lincs.digital/vocabulary/identity/>
-PREFIX occupation: <https://lincs.digital/vocabulary/occupation/>
+PREFIX lincs: <http://id.lincsproject.ca/>
+PREFIX biography: <http://id.lincsproject.ca/biography/>
+PREFIX event: <http://id.lincsproject.ca/event/>
+PREFIX identity: <http://id.lincsproject.ca/identity/>
+PREFIX occupation: <http://id.lincsproject.ca/occupation/>
 PREFIX aat: <http://vocab.getty.edu/aat/>
 PREFIX lexvo: <http://lexvo.org/id/iso639-3/>
-PREFIX base: <http://example.org/chgis/>
-# NOTE: Replace base: with actual project URI for production queries
+PREFIX <http://temp.lincsproject.ca/datasetID/ <http://example.org/chgis/>
+# NOTE: Replace <http://temp.lincsproject.ca/datasetID/ with actual project URI for production queries
 ```
 
 ## Query Templates
@@ -69,7 +68,7 @@ GROUP BY ?class
 ORDER BY DESC(?count)
 ```
 
-### 2. Find a Person by Name
+### 2. Find a Person by Name and additional information about their birth if available
 ```sparql
 SELECT ?person ?name ?birthDate ?birthPlace ?birthPlaceLabel
 WHERE {
@@ -95,6 +94,8 @@ LIMIT 20
 
 ### 3. Person's Full Biography (Events, Occupations, Relationships)
 ```sparql
+
+# Replace viaf:XXXXXXXXX with valid person URI
 SELECT ?person ?name ?eventType ?eventLabel ?date ?place ?placeLabel
 WHERE {
   GRAPH <http://graph.lincsproject.ca/hist-canada/hist-cdns> {
@@ -143,7 +144,7 @@ ORDER BY ?date
 SELECT ?person ?name ?eventType ?date
 WHERE {
   GRAPH <http://graph.lincsproject.ca/hist-canada/hist-cdns> {
-    ?event crm:P7_took_place_at geo:6094817 .  # Ottawa
+    ?event crm:P7_took_place_at geonames:6094817/ .  # Ottawa
 
     {
       ?event crm:P98_brought_into_life ?person .
@@ -205,7 +206,7 @@ ORDER BY ?agencyName ?startDate
 # Use YEAR() to bin by calendar year for historical analysis.
 SELECT ?year ?topic ?topicLabel (COUNT(?meeting) AS ?meetings)
 WHERE {
-  GRAPH <http://graph.lincsproject.ca/hist-canada/cab-con> {
+  GRAPH <http://graph.lincsproject.ca/hist-canada/cabinet-conclusions> {
     ?meeting a crm:E7_Activity ;
              crm:P21_had_general_purpose ?topic ;
              crm:P4_has_time-span ?ts .
@@ -227,6 +228,30 @@ ORDER BY ?year
 
 ### 7. Cross-Dataset: People Appearing in Multiple Datasets
 ```sparql
+SELECT ?person 
+       (SAMPLE(?name) AS ?personName) 
+       (COUNT(DISTINCT ?g) AS ?datasetCount)
+       (GROUP_CONCAT(DISTINCT ?label; separator=", ") AS ?foundIn)
+WHERE {
+  # Define the graphs and their readable labels upfront
+  VALUES (?g ?label) {
+    (<http://graph.lincsproject.ca/hist-canada/hist-cdns> "Historical Canadians")
+    (<http://graph.lincsproject.ca/hist-canada/ind-affairs> "Indian Affairs")
+    (<http://graph.lincsproject.ca/hist-canada/cabinet-conclusions> "Cabinet Conclusions")
+  }
+  
+  # Execute a single graph pattern match against the defined list
+  GRAPH ?g {
+    ?person a crm:E21_Person ; 
+            rdfs:label ?name .
+  }
+}
+GROUP BY ?person
+HAVING (?datasetCount > 1)
+ORDER BY DESC(?datasetCount) ?personName
+```
+### 7.1. Cross-Dataset: All People Across Datasets
+```sparql
 SELECT ?person ?name ?dataset
 WHERE {
   {
@@ -240,7 +265,7 @@ WHERE {
       BIND("Indian Affairs" AS ?dataset)
     }
   } UNION {
-    GRAPH <http://graph.lincsproject.ca/hist-canada/cab-con> {
+    GRAPH <http://graph.lincsproject.ca/hist-canada/cabinet-conclusions> {
       ?person a crm:E21_Person ; rdfs:label ?name .
       BIND("Cabinet Conclusions" AS ?dataset)
     }
@@ -253,7 +278,6 @@ ORDER BY ?person
 For querying your Neo4j CIDOC-CRM census data if serialized to RDF:
 
 ```sparql
-PREFIX base: <http://example.org/chgis/>
 
 SELECT ?place ?placeName ?year ?variable ?value ?unit
 WHERE {
@@ -263,7 +287,7 @@ WHERE {
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
 
-  ?presence crmgeo:P166_was_a_presence_of ?place .
+  ?presence crm:P166_was_a_presence_of ?place .
   ?place rdfs:label ?placeName .
 
   ?varType rdfs:label ?variable .
@@ -279,17 +303,16 @@ ORDER BY ?placeName ?year ?variable
 
 ### 9. Population Timeline for a Place
 ```sparql
-PREFIX base: <http://example.org/chgis/>
 
 SELECT ?year ?population
 WHERE {
   ?measurement a crm:E16_Measurement ;
                crm:P39_measured ?presence ;
-               crm:P2_has_type base:VAR_POP_XX_N ;
+               crm:P2_has_type <http://temp.lincsproject.ca/datasetID/VAR_POP_XX_N ;
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
 
-  ?presence crmgeo:P166_was_a_presence_of ?place .
+  ?presence crm:P166_was_a_presence_of ?place .
   ?place rdfs:label "Westmeath"@en .
 
   ?dim crm:P90_has_value ?population .
@@ -305,6 +328,8 @@ ORDER BY ?year
 #### 10a. Co-located (both datasets loaded in same triplestore)
 Use when you've loaded your census RDF into the same Fuseki/GraphDB instance as LINCS data:
 
+Load into a graph with a URI that starts with `http://graph.lincsproject.ca/hist-canada/`
+
 ```sparql
 SELECT ?person ?name ?localPlace ?localPlaceName ?censusYear ?population
 WHERE {
@@ -315,16 +340,19 @@ WHERE {
     ?person rdfs:label ?name .
   }
 
+  GRAPH <http://graph.lincsproject.ca/hist-canada/my-graph> {
+
   # Local census data (default graph or named local graph)
   ?localPlace owl:sameAs ?geoPlace ;
               rdfs:label ?localPlaceName .
   ?measurement crm:P39_measured ?presence ;
-               crm:P2_has_type base:VAR_POP_XX_N ;
+               crm:P2_has_type <http://temp.lincsproject.ca/datasetID/VAR_POP_XX_N ;
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
-  ?presence crmgeo:P166_was_a_presence_of ?localPlace .
+  ?presence crm:P166_was_a_presence_of ?localPlace .
   ?dim crm:P90_has_value ?population .
   ?ts crm:P82_at_some_time_within ?censusYear .
+  }
 }
 ORDER BY ?name ?censusYear
 ```
@@ -349,10 +377,10 @@ WHERE {
   ?localPlace owl:sameAs ?geoPlace ;
               rdfs:label ?localPlaceName .
   ?measurement crm:P39_measured ?presence ;
-               crm:P2_has_type base:VAR_POP_XX_N ;
+               crm:P2_has_type <http://temp.lincsproject.ca/datasetID/VAR_POP_XX_N ;
                crm:P40_observed_dimension ?dim ;
                crm:P4_has_time-span ?ts .
-  ?presence crmgeo:P166_was_a_presence_of ?localPlace .
+  ?presence crm:P166_was_a_presence_of ?localPlace .
   ?dim crm:P90_has_value ?population .
   ?ts crm:P82_at_some_time_within ?censusYear .
 }

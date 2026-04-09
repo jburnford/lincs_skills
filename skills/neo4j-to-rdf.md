@@ -1,5 +1,5 @@
 ---
-name: cidoc-to-rdf
+name: neo4j-to-rdf
 description: Convert CIDOC-CRM data from Neo4j property graph format to valid RDF/Turtle serialization. Handles namespace mapping, relationship property reification, authority URI insertion, and LINCS-compatible output.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, Write, Edit
@@ -22,7 +22,6 @@ Convert Neo4j CIDOC-CRM data to LINCS-compatible RDF/Turtle.
 
 ```turtle
 @prefix crm: <http://www.cidoc-crm.org/cidoc-crm/> .
-@prefix crmgeo: <http://www.ics.forth.gr/isl/CRMgeo/> .
 @prefix crmdig: <http://www.ics.forth.gr/isl/CRMdig/> .
 @prefix oa: <http://www.w3.org/ns/oa#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -30,18 +29,18 @@ Convert Neo4j CIDOC-CRM data to LINCS-compatible RDF/Turtle.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix geo: <http://sws.geonames.org/> .
+@prefix geonames: <http://sws.geonames.org/> .
 @prefix viaf: <http://viaf.org/viaf/> .
 @prefix wikidata: <http://www.wikidata.org/entity/> .
-@prefix lincs: <https://lincs.digital/> .
-@prefix biography: <https://lincs.digital/vocabulary/biography/> .
-@prefix event: <https://lincs.digital/vocabulary/event/> .
-@prefix identity: <https://lincs.digital/vocabulary/identity/> .
-@prefix occupation: <https://lincs.digital/vocabulary/occupation/> .
+@prefix lincs: <http://id.lincsproject.ca/> .
+@prefix biography: <http://id.lincsproject.ca/biography/> .
+@prefix event: <http://id.lincsproject.ca/event/> .
+@prefix identity: <http://id.lincsproject.ca/identity/> .
+@prefix occupation: <http://id.lincsproject.ca/occupation/> .
 @prefix aat: <http://vocab.getty.edu/aat/> .
 @prefix lexvo: <http://lexvo.org/id/iso639-3/> .
 @prefix geosparql: <http://www.opengis.net/ont/geosparql#> .
-@prefix base: <http://example.org/chgis/> .  # REPLACE with actual project URI
+@prefix base: <http://temp.lincsproject.ca/datasetID/> .  # REPLACE with actual project URI 
 ```
 
 ## Translation Rules
@@ -52,23 +51,13 @@ Neo4j:  (:E53_Place {place_id: 'ON142032', name: 'Westmeath'})
 Turtle: base:PLACE_ON142032 a crm:E53_Place ;
             rdfs:label "Westmeath"@en .
 ```
-
-### Rule 2: CRMgeo Nodes Get Separate Namespace
-```
-Neo4j:  (:E93_Presence {presence_id: 'ON082003_1871'})
-Turtle: base:ON082003_1871 a crmgeo:E93_Presence ;
-            rdfs:label "Westmeath presence (1871)"@en .
-```
-
-### Rule 3: Simple Relationships → Predicates
+### Rule 2: Simple Relationships → Predicates
 ```
 Neo4j:  (p:E93_Presence)-[:P166_was_a_presence_of]->(pl:E53_Place)
-Turtle: base:ON082003_1871 crmgeo:P166_was_a_presence_of base:PLACE_ON142032 .
+Turtle: base:ON082003_1871 crm:P166_was_a_presence_of base:PLACE_ON142032 .
 ```
 
-Note: P166, P164, P161, P132, P134 use `crmgeo:` not `crm:`.
-
-### Rule 4: Relationship Properties → Reification
+### Rule 3: Relationship Properties → Reification
 Neo4j allows properties on relationships. RDF does not. Convert using reification or intermediate nodes.
 
 **P89_falls_within with during_period**:
@@ -77,18 +66,18 @@ Neo4j:  (csd)-[:P89_falls_within {during_period: '1871'}]->(cd)
 ```
 DO NOT convert directly. Instead, use the E93_Presence → P10_falls_within path.
 
-**IMPORTANT**: `crm:P10_falls_within` has domain/range `E92_Spacetime_Volume` (and subclasses: `E93_Presence`, `E4_Period`). Both subject and object MUST be typed as `crmgeo:E93_Presence` (or `crm:E4_Period`), never bare `crm:E53_Place`.
+**IMPORTANT**: `crm:P10_falls_within` has domain/range `E92_Spacetime_Volume` (and subclasses: `E93_Presence`, `E4_Period`). Both subject and object MUST be typed as `crm:E93_Presence` (or `crm:E4_Period`), never bare `crm:E53_Place`.
 
 ```turtle
 # Both nodes must be E93_Presence — not E53_Place
-base:ON082003_1871 a crmgeo:E93_Presence ;
+base:ON082003_1871 a crm:E93_Presence ;
     rdfs:label "Westmeath CSD presence (1871)"@en .
-base:CD_ON_Renfrew_North_1871 a crmgeo:E93_Presence ;
+base:CD_ON_Renfrew_North_1871 a crm:E93_Presence ;
     rdfs:label "Renfrew North CD presence (1871)"@en .
 
 base:ON082003_1871 crm:P10_falls_within base:CD_ON_Renfrew_North_1871 .
 ```
-The temporal scoping is inherent in the presence nodes — no property needed. If the target is only an `E53_Place` with no presence node, you must first create the corresponding `E93_Presence` and link it via `crmgeo:P166_was_a_presence_of`.
+The temporal scoping is inherent in the presence nodes — no property needed. If the target is only an `E53_Place` with no presence node, you must first create the corresponding `E93_Presence` and link it via `crm:P166_was_a_presence_of`.
 
 **P122_borders_with with shared_border_length**:
 ```
@@ -109,7 +98,7 @@ base:border_dim_A_B a crm:E54_Dimension ;
     crm:P91_has_unit base:UNIT_METRES .
 ```
 
-### Rule 5: Custom Relationships → Events
+### Rule 4: Custom Relationships → Events
 ```
 Neo4j:  (a)-[:PLACE_LINEAGE {type: 'SPLIT_FROM', year: 1881}]->(b)
 ```
@@ -122,15 +111,15 @@ base:transform_1881_A a crm:E81_Transformation ;
     crm:P4_has_time-span base:ts_1881 .
 ```
 
-### Rule 6: Internal IDs → Authority URIs + Internal
+### Rule 5: Internal IDs → Authority URIs + Internal
 Keep internal URIs but add owl:sameAs links:
 ```turtle
 base:PLACE_ON142032 a crm:E53_Place ;
     rdfs:label "Westmeath"@en ;
-    owl:sameAs geo:5914691 .  # GeoNames ID for Westmeath, Ontario
+    owl:sameAs geonames:5914691/ .  # GeoNames ID for Westmeath, Ontario
 ```
 
-### Rule 7: Measurement Chain (Complete)
+### Rule 6: Measurement Chain (Complete)
 ```turtle
 # Source provenance
 base:SOURCE_1871_V1T1 a crm:E73_Information_Object ;
@@ -167,7 +156,7 @@ base:ts_1871 a crm:E52_Time-Span ;
     crm:P82b_end_of_the_end "1871-12-31T23:59:59"^^xsd:dateTime .
 ```
 
-### Rule 8: Name/Appellation Pattern
+### Rule 7: Name/Appellation Pattern
 
 **IMPORTANT**: Match the appellation type to the entity kind. Do NOT use `biography:personalName` for places.
 
@@ -198,7 +187,7 @@ base:appellation_Wesmeath a crm:E33_E41_Linguistic_Appellation ;
 base:ON114011_1881 crm:P1_is_identified_by base:appellation_Wesmeath .
 ```
 
-### Rule 9: Spatial Coordinates → GeoSPARQL WKT
+### Rule 8: Spatial Coordinates → GeoSPARQL WKT
 
 Neo4j stores spatial data as native Point types, lat/lon properties, or WKT strings. Convert to GeoSPARQL `wktLiteral` for compatibility with spatial triplestores and GIS tools.
 
@@ -206,7 +195,7 @@ Neo4j stores spatial data as native Point types, lat/lon properties, or WKT stri
 ```
 Neo4j:  (:E94_Space_Primitive {latitude: 45.763, longitude: -76.884})
 Turtle:
-base:SP_ON082003_1871 a crmgeo:E94_Space_Primitive ;
+base:SP_ON082003_1871 a crm:E94_Space_Primitive ;
     rdfs:label "Centroid of Westmeath (1871)"@en ;
     crm:P168_place_is_defined_by
         "<http://www.opengis.net/def/crs/EPSG/0/4326> POINT(-76.884 45.763)"^^geosparql:wktLiteral .
@@ -227,7 +216,7 @@ base:PLACE_ON142032 crm:P168_place_is_defined_by
 - For simpler deployments without GeoSPARQL, `"POINT(lon lat)"^^xsd:string` is acceptable
 - Attach coordinates to `E53_Place` via `P168` for static places, or to `E94_Space_Primitive` via `P161` for time-varying presences
 
-### Rule 10: Neo4j Datatype → XSD Datatype Mapping
+### Rule 9: Neo4j Datatype → XSD Datatype Mapping
 
 Always strictly type RDF literals. Never leave literals untyped.
 

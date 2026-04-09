@@ -1,6 +1,6 @@
 ---
 name: cidoc-crm
-description: CIDOC-CRM ontology reference for cultural heritage knowledge graphs. Use when modeling entities, choosing classes/properties, or checking ontology correctness. Covers core CRM v7.3.1, CRMgeo, and CRMdig extensions.
+description: CIDOC-CRM ontology reference for cultural heritage knowledge graphs. Use when modeling entities, choosing classes/properties, or checking ontology correctness. Covers core CRM v7.3.1, and CRMdig extensions.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, WebFetch
 argument-hint: [class-or-property-or-question]
@@ -12,7 +12,7 @@ You are a CIDOC-CRM ontology expert. When the user asks about classes, propertie
 
 ## Output Constraints
 
-When generating data models, always default to valid **RDF Turtle (`.ttl`)** syntax unless asked otherwise. Always include standard prefixes (`rdf:`, `rdfs:`, `owl:`, `xsd:`, `skos:`, `crm:`, `crmgeo:`, `crmdig:`). Every generated entity MUST have `rdfs:label`. Never attach dates or places directly to an entity — always route through an event node (this is CIDOC-CRM's event-centric pattern, not schema.org's flat model).
+When generating data models, always default to valid **RDF Turtle (`.ttl`)** syntax unless asked otherwise. Always include standard prefixes (`rdf:`, `rdfs:`, `owl:`, `xsd:`, `skos:`, `crm:`, `crmdig:`). Every generated entity MUST have `rdfs:label`. Never attach dates or places directly to an entity — always route through an event node (this is CIDOC-CRM's event-centric pattern, not schema.org's flat model).
 
 ## Query: $ARGUMENTS
 
@@ -97,8 +97,20 @@ Current Version: 7.3.1 (there is NO version 2.0 — version history goes 3.x →
 | P141_assigned | E13 | E1 | Attribute value assigned |
 | P143_joined | E85 | E39 | Joining added this actor |
 | P144_joined_with | E85 | E74 | Joining added to this group |
-| P168_place_is_defined_by | E53 | `geo:wktLiteral` or xsd:string | WKT coordinate geometry. Use `"POINT(lon lat)"^^geo:wktLiteral` for GeoSPARQL-compatible triplestores. Use `"POINT(lon lat)"^^xsd:string` for simpler deployments. For polygons: `"POLYGON((lon1 lat1, lon2 lat2, ...))"^^geo:wktLiteral`. |
+| P168_place_is_defined_by | E53 | Use `"POINT(lon lat)"@en`, For polygons: `"POLYGON((lon1 lat1, lon2 lat2, ...))"@en`. |
 | P190_has_symbolic_content | E90 | xsd:string | Literal string value |
+
+### Additional Properties/Classes related to GeoSpatial Modelling
+
+| Class/Property | Type | Description |
+|---------------|------|-------------|
+| E93_Presence | Class | Spatiotemporal extent of a persistent item during a period |
+| P166_was_a_presence_of | Property | E93 → E77 (presence manifests persistent item) |
+| P164_is_temporally_specified_by | Property | E93 → E52 (presence has temporal extent) |
+| P161_has_spatial_projection | Property | E93 → E94 (presence has geometry) |
+| P132_spatiotemporally_overlaps_with | Property | E92 → E92 (two presences overlap in space-time) |
+| P134_continued | Property | E93 → E93 (temporal continuity between presences) |
+
 
 ## Golden Pattern: The Event-Centric Model
 
@@ -110,31 +122,36 @@ CIDOC-CRM is event-centric: dates and places attach to **events**, not directly 
 @prefix crm: <http://www.cidoc-crm.org/cidoc-crm/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix geo: <http://sws.geonames.org/> .
+@prefix geonames: <http://sws.geonames.org/> .
 @prefix viaf: <http://viaf.org/viaf/> .
 
 # The person
 viaf:29539039 a crm:E21_Person ;
     rdfs:label "Louis Riel"@en ;
-    crm:P1_is_identified_by [ a crm:E33_E41_Linguistic_Appellation ;
+    crm:P1_is_identified_by <http://temp.lincsproject.ca/dataset/riel_name> .
+
+<http://temp.lincsproject.ca/datasetID/riel_name> a crm:E33_E41_Linguistic_Appellation ;
         rdfs:label "Name of Louis Riel"@en ;
-        crm:P190_has_symbolic_content "Louis Riel"^^xsd:string ] .
+        crm:P190_has_symbolic_content "Louis Riel"^^xsd:string .
 
 # The birth EVENT — dates and places attach here, not on the person
-<urn:birth:riel> a crm:E67_Birth ;
+<http://temp.lincsproject.ca/datasetID/riel_birth_event> a crm:E67_Birth ;
     rdfs:label "Birth of Louis Riel"@en ;
     crm:P98_brought_into_life viaf:29539039 ;
-    crm:P7_took_place_at geo:6183235 ;          # Red River Settlement
-    crm:P4_has_time-span [ a crm:E52_Time-Span ;
-        rdfs:label "22 October 1844"@en ;
-        crm:P82_at_some_time_within "1844-10-22"^^xsd:string ;
-        crm:P82a_begin_of_the_begin "1844-10-22T00:00:00"^^xsd:dateTime ;
-        crm:P82b_end_of_the_end "1844-10-22T23:59:59"^^xsd:dateTime ] .
+    crm:P7_took_place_at geonames:6183235/ ;          # Red River Settlement
+    crm:P4_has_time-span <http://temp.lincsproject.ca/datasetID/riel_birth_event/timespan> .
+
+<http://temp.lincsproject.ca/datasetID/riel_birth_event/timespan> a crm:E52_Time-Span ;
+    rdfs:label "22 October 1844"@en ;
+    crm:P82_at_some_time_within "1844-10-22"^^xsd:string ;
+    crm:P82a_begin_of_the_begin "1844-10-22T00:00:00"^^xsd:dateTime ;
+    crm:P82b_end_of_the_end "1844-10-22T23:59:59"^^xsd:dateTime . 
+
 
 # The place
-geo:6183235 a crm:E53_Place ;
+geonames:6183235/ a crm:E53_Place ;
     rdfs:label "Red River Settlement"@en ;
-    crm:P89_falls_within geo:6065171 .           # Manitoba
+    crm:P89_falls_within geonames:6065171/ .           # Manitoba
 ```
 
 **Key structural rules visible in this example:**
@@ -148,56 +165,46 @@ geo:6183235 a crm:E53_Place ;
 
 ```turtle
 @prefix crm: <http://www.cidoc-crm.org/cidoc-crm/> .
-@prefix crmgeo: <http://www.ics.forth.gr/isl/CRMgeo/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix base: <http://example.org/chgis/> .
+
 
 # The measurement EVENT — the value attaches here, not on the place
-base:MEAS_ON082003_1871_POP a crm:E16_Measurement ;
+<http://temp.lincsproject.ca/datasetID/MEAS_ON082003_1871_POP> a crm:E16_Measurement ;
     rdfs:label "Population measurement of Westmeath (1871)"@en ;
-    crm:P39_measured base:ON082003_1871 ;         # What was measured (presence)
-    crm:P2_has_type base:VAR_POP_XX_N ;           # What variable
-    crm:P40_observed_dimension [ a crm:E54_Dimension ;
-        rdfs:label "2632"@en ;
-        crm:P90_has_value "2632"^^xsd:integer ;
-        crm:P91_has_unit base:UNIT_PERSONS ] ;
-    crm:P4_has_time-span [ a crm:E52_Time-Span ;
-        rdfs:label "1871"@en ;
-        crm:P82_at_some_time_within "1871"^^xsd:string ;
-        crm:P82a_begin_of_the_begin "1871-01-01T00:00:00"^^xsd:dateTime ;
-        crm:P82b_end_of_the_end "1871-12-31T23:59:59"^^xsd:dateTime ] .
+    crm:P39_measured <http://temp.lincsproject.ca/datasetID/ON082003_1871> ;         # What was measured (presence)
+    crm:P2_has_type <http://temp.lincsproject.ca/datasetID/VAR_POP_XX_N> ;           # What variable
+    crm:P40_observed_dimension <http://temp.lincsproject.ca/datasetID/MEAS_ON082003_1871_POP/dimension> ;
+    crm:P4_has_time-span  <http://temp.lincsproject.ca/datasetID/MEAS_ON082003_1871_POP/timespan>.
 
-# The temporal presence (CRMgeo — note the namespace)
-base:ON082003_1871 a crmgeo:E93_Presence ;
+<http://temp.lincsproject.ca/datasetID/MEAS_ON082003_1871_POP/dimension> a crm:E54_Dimension ;
+    rdfs:label "2632"@en ;
+    crm:P90_has_value "2632"^^xsd:integer ;
+    crm:P91_has_unit <http://temp.lincsproject.ca/datasetID/UNIT_PERSONS>.
+
+<http://temp.lincsproject.ca/datasetID/MEAS_ON082003_1871_POP/timespan> a crm:E52_Time-Span ;
+    rdfs:label "1871"@en ;
+    crm:P82_at_some_time_within "1871"^^xsd:string ;
+    crm:P82a_begin_of_the_begin "1871-01-01T00:00:00"^^xsd:dateTime ;
+    crm:P82b_end_of_the_end "1871-12-31T23:59:59"^^xsd:dateTime .
+
+
+# The temporal presence
+<http://temp.lincsproject.ca/datasetID/ON082003_1871> a crm:E93_Presence ;
     rdfs:label "Westmeath presence (1871)"@en ;
-    crmgeo:P166_was_a_presence_of base:PLACE_ON142032 .
+    crm:P166_was_a_presence_of <http://temp.lincsproject.ca/datasetID/PLACE_ON142032> .
 
 # The enduring place
-base:PLACE_ON142032 a crm:E53_Place ;
+<http://temp.lincsproject.ca/datasetID/PLACE_ON142032> a crm:E53_Place ;
     rdfs:label "Westmeath"@en ;
     owl:sameAs <http://sws.geonames.org/5914691/> .
 ```
 
-## Extension: CRMgeo (Geospatial)
 
-Namespace: `http://www.ics.forth.gr/isl/CRMgeo/` (prefix: `crmgeo:`)
 
-IMPORTANT: These are NOT core CIDOC-CRM. They require importing the CRMgeo extension.
+### When to Use E93_Presence vs. E53_Place
 
-| Class/Property | Type | Description |
-|---------------|------|-------------|
-| E93_Presence | Class | Spatiotemporal extent of a persistent item during a period |
-| E94_Space_Primitive | Class | Geometric coordinates (points, polygons) |
-| P166_was_a_presence_of | Property | E93 → E77 (presence manifests persistent item) |
-| P164_is_temporally_specified_by | Property | E93 → E52 (presence has temporal extent) |
-| P161_has_spatial_projection | Property | E93 → E94 (presence has geometry) |
-| P132_spatiotemporally_overlaps_with | Property | E92 → E92 (two presences overlap in space-time) |
-| P134_continued | Property | E93 → E93 (temporal continuity between presences) |
-
-### When to Use CRMgeo vs. Core CRM
-
-Use CRMgeo (E93_Presence) when:
+Use  E93_Presence when:
 - Place boundaries change over time and you need to track each configuration
 - You need to record spatial overlap between temporal snapshots
 - You're building a historical GIS with time-scoped geometries
@@ -234,11 +241,11 @@ Namespace: `http://www.ics.forth.gr/isl/CRMdig/` (prefix: `crmdig:`)
 
 8. **E55_Type without vocabulary grounding**: Don't create ad-hoc E55_Type nodes with only internal labels. Ground types in external vocabularies: Wikidata QIDs, Getty AAT, or LINCS SKOS vocabularies. When using E55_Type for categorical/taxonomic data, also declare the node as `skos:Concept` to enable interoperability with SKOS-based thesauri:
     ```turtle
-    base:VAR_POP_XX_N a crm:E55_Type, skos:Concept ;
+    <http://temp.lincsproject.ca/datasetID/VAR_POP_XX_N> a crm:E55_Type, skos:Concept ;
         rdfs:label "Total population"@en ;
         skos:prefLabel "Total population"@en ;
-        skos:broader base:VAR_POPULATION ;
-        crm:P127_has_broader_term base:VAR_POPULATION .
+        skos:broader <http://temp.lincsproject.ca/datasetID/VAR_POPULATION> ;
+        crm:P127_has_broader_term <http://temp.lincsproject.ca/datasetID/VAR_POPULATION> .
     ```
     Use both `skos:broader` and `crm:P127_has_broader_term` when bridging CRM with external thesauri.
 
@@ -250,17 +257,24 @@ When building knowledge graphs from primary historical sources (OCR'd documents,
 
 ```turtle
 # The assertion itself is uncertain
-<urn:assignment:birth_date_riel> a crm:E13_Attribute_Assignment ;
+<http://temp.lincsproject.ca/datasetID/riel_birth_event/birth_date_riel_assignment> a crm:E13_Attribute_Assignment ;
     rdfs:label "Uncertain birth date assignment for Louis Riel"@en ;
-    crm:P140_assigned_attribute_to <urn:birth:riel> ;
-    crm:P141_assigned [ a crm:E52_Time-Span ;
-        rdfs:label "circa 1844"@en ;
-        crm:P82_at_some_time_within "c. 1844"^^xsd:string ;
-        crm:P82a_begin_of_the_begin "1843-01-01T00:00:00"^^xsd:dateTime ;
-        crm:P82b_end_of_the_end "1845-12-31T23:59:59"^^xsd:dateTime ] ;
-    crm:P2_has_type <urn:type:uncertain_date> ;
-    crm:P17_was_motivated_by [ a crm:E73_Information_Object ;
-        rdfs:label "OCR'd census record (poor quality)"@en ] .
+    crm:P140_assigned_attribute_to <http://temp.lincsproject.ca/datasetID/riel_birth_event> ;
+    crm:P141_assigned <http://temp.lincsproject.ca/datasetID/riel_birth_event/birth_date_riel_assignment/timespan> ;
+    crm:P2_has_type edit:certaintyUnknown ;
+    crm:P17_was_motivated_by <http://temp.lincsproject.ca/datasetID/riel_birth_event/birth_date_riel_assignment/motivation> .
+
+# Not sure if this should be the same timespan from the first example if so replace with `<http://temp.lincsproject.ca/datasetID/riel_birth_event/timespan>` - data is different here than there.
+<http://temp.lincsproject.ca/datasetID/riel_birth_event/birth_date_riel_assignment/timespan> a crm:E52_Time-Span ;
+    rdfs:label "circa 1844"@en ;
+    crm:P82_at_some_time_within "c. 1844"^^xsd:string ;
+    crm:P82a_begin_of_the_begin "1843-01-01T00:00:00"^^xsd:dateTime ;
+    crm:P82b_end_of_the_end "1845-12-31T23:59:59"^^xsd:dateTime .
+
+
+<http://temp.lincsproject.ca/datasetID/riel_birth_event/birth_date_riel_assignment/motivation> a crm:E73_Information_Object ;
+    rdfs:label "OCR'd census record (poor quality)"@en .
+
 ```
 
 **Key rules for uncertainty:**
@@ -287,15 +301,15 @@ When asked "how should I model X?", follow this decision tree:
 1. **Is it a person?** → E21_Person (link to VIAF/Wikidata)
 2. **Is it a group/organization?** → E74_Group
 3. **Is it a place?** → E53_Place (link to GeoNames)
-4. **Does the place change over time?** → Add CRMgeo E93_Presence per period
+4. **Does the place change over time?** → Add E93_Presence per period
 5. **Is it something that happened?** → E7_Activity or more specific event subclass
 6. **Is it a birth/death?** → E67_Birth / E69_Death
 7. **Is it a group forming/ending?** → E66_Formation / E68_Dissolution
 8. **Is it someone joining/leaving a group?** → E85_Joining / E86_Leaving
-9. **Is it a measurement/observation?** → E16_Measurement → E54_Dimension + E58_Unit
+9. **Is it a measurement/observation?** → E16_Measurement → E54_Dimension + E58_Measurement_Unit
 10. **Is it a document/text?** → E33_Linguistic_Object or E73_Information_Object
 11. **Is it a digital file?** → CRMdig:D1_Digital_Object
-12. **Is it a classification/category?** → E55_Type (link to Wikidata/SKOS vocab)
+12. **Is it a classification/category?** → E55_Type (link to Wikidata/LINCS SKOS vocab)
 13. **Is it a name?** → E33_E41_Linguistic_Appellation with P190 for string value
 14. **Is it an uncertain assertion?** → E13_Attribute_Assignment wrapping the pattern
 
