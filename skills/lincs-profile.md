@@ -47,7 +47,7 @@ Do NOT make up URIs with these namespaces. Only use them if a valid URI is inclu
 **Project**: Linked Infrastructure for Networked Cultural Scholarship
 **SPARQL Endpoint**: `https://fuseki.lincsproject.ca/lincs/sparql` (POST)
 **ResearchSpace UI**: `https://rs.lincsproject.ca/`
-**Core Ontology**: CIDOC-CRM v7.1.3
+**Core Ontology**: CIDOC-CRM v7.1.1
 **Extensions**: CRMdig (digital objects), OA Web Annotation Data Model
 
 ## History of Canada Datasets

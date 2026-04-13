@@ -6,7 +6,7 @@ Claude Code skills for working with CIDOC-CRM ontology, LINCS (Linked Infrastruc
 
 | Skill | Slash Command | Description |
 |-------|---------------|-------------|
-| [cidoc-crm.md](cidoc-crm.md) | `/cidoc-crm` | CIDOC-CRM v7.1.3 ontology reference — classes, properties, CRMgeo/CRMdig extensions, modeling decision guide, anti-patterns |
+| [cidoc-crm.md](cidoc-crm.md) | `/cidoc-crm` | CIDOC-CRM v7.1.1 ontology reference — classes, properties, CRMgeo/CRMdig extensions, modeling decision guide, anti-patterns |
 | [lincs-profile.md](lincs-profile.md) | `/lincs-profile` | LINCS application profile — 8 reusable patterns, person/organization/government/document templates from all 3 History of Canada datasets |
 | [lincs-validate.md](lincs-validate.md) | `/lincs-validate` | Model validator — 9-category checklist producing PASS/WARN/FAIL report against LINCS requirements |
 | [neo4j-to-rdf.md](neo4j-to-rdf.md) | `/neo4j-to-rdf` | Neo4j → RDF/Turtle converter — 8 translation rules for namespace mapping, relationship property reification, authority URI insertion |
@@ -95,7 +95,7 @@ Built from analysis of:
 - [LINCS Historical Canadian Persons](https://lincsproject.ca/docs/explore-lod/project-datasets/hist-cdns/)
 - [LINCS Historical Indian Affairs Agents](https://lincsproject.ca/docs/explore-lod/project-datasets/ind-affairs/)
 - [LINCS Cabinet Conclusions](https://lincsproject.ca/docs/explore-lod/project-datasets/cabinet-conclusions/)
-- CIDOC-CRM v7.1.3 specification (ISO 21127)
+- CIDOC-CRM v7.1.1 specification (ISO 21127)
 - CRMgeo geospatial extension
 - CRMdig digital extension
 - Canadian Historical GIS (CHGIS) Temporal Census Polygons project

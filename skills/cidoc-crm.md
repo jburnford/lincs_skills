@@ -1,6 +1,6 @@
 ---
 name: cidoc-crm
-description: CIDOC-CRM ontology reference for cultural heritage knowledge graphs. Use when modeling entities, choosing classes/properties, or checking ontology correctness. Covers core CRM v7.1.3, and CRMdig extensions.
+description: CIDOC-CRM ontology reference for cultural heritage knowledge graphs. Use when modeling entities, choosing classes/properties, or checking ontology correctness. Covers core CRM v7.1.1, and CRMdig extensions.
 user-invocable: true
 allowed-tools: Read, Grep, Glob, WebFetch
 argument-hint: [class-or-property-or-question]
@@ -16,11 +16,10 @@ When generating data models, always default to valid **RDF Turtle (`.ttl`)** syn
 
 ## Query: $ARGUMENTS
 
-## Core Ontology: CIDOC-CRM v7.1.3
+## Core Ontology: CIDOC-CRM v7.1.1
 
 Namespace: `http://www.cidoc-crm.org/cidoc-crm/` (prefix: `crm:`)
-ISO Standard: ISO 21127
-Current Version: 7.1.3 (there is NO version 2.0)
+Current Version: 7.1.1
 
 ### CIDOC CRM Classes that LINCS Uses
 
