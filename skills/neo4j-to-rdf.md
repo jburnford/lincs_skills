@@ -121,11 +121,6 @@ base:PLACE_ON142032 a crm:E53_Place ;
 
 ### Rule 6: Measurement Chain (Complete)
 ```turtle
-# Source provenance
-base:SOURCE_1871_V1T1 a crm:E73_Information_Object ;
-    rdfs:label "Census 1871 Volume 1 Table 1"@en ;
-    crm:P70_documents base:MEAS_ON082003_1871_POP_XX_N .
-
 # Measurement event
 base:MEAS_ON082003_1871_POP_XX_N a crm:E16_Measurement ;
     rdfs:label "Population measurement of Westmeath (1871)"@en ;

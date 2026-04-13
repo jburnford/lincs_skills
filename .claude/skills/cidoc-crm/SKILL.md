@@ -76,7 +76,6 @@ Current Version: 7.3.1 (there is NO version 2.0 — version history goes 3.x →
 | P39_measured | E16 | E1 | Measurement observed this entity |
 | P40_observed_dimension | E16 | E54 | Measurement yielded this dimension |
 | P67_refers_to | E89 | E1 | Information object mentions entity |
-| P70_documents | E31 | E1 | Document records information about |
 | P72_has_language | E33 | E56 | Written/spoken in this language |
 | P82_at_some_time_within | E52 | xsd:string | Human-readable date label |
 | P82a_begin_of_the_begin | E52 | xsd:dateTime | Earliest possible start. Use `xsd:date` if time unknown, but ensure valid ISO 8601 (e.g., `"1871-01-01"^^xsd:date`). Use `xsd:dateTime` when time is known (e.g., `"1871-01-01T00:00:00"^^xsd:dateTime`). |

@@ -105,7 +105,6 @@ Check that:
 - `E54_Dimension` has `P90_has_value` with a numeric XSD datatype (`^^xsd:integer` or `^^xsd:decimal`)
 - `E54_Dimension` has `P91_has_unit` pointing to a valid `E58_Measurement_Unit` node (not a bare string)
 - Variable classification via `E16 → P2_has_type → E55_Type`
-- Provenance via `E73 → P70_documents → E16`
 
 **FAIL if**: `E54_Dimension` is missing `P90_has_value` (measurement has no numeric result).
 **FAIL if**: `E54_Dimension` is missing `P91_has_unit` (measurement has no unit — renders data uninterpretable).
