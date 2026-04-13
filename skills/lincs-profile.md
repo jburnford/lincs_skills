@@ -40,12 +40,14 @@ When generating Turtle from this profile, always include these exact prefix decl
 
 Do NOT guess or hallucinate namespace URIs. The exact URIs above are authoritative.
 
+Do NOT make up URIs with these namespaces. Only use them if a valid URI is included in the data.
+
 ## LINCS Overview
 
 **Project**: Linked Infrastructure for Networked Cultural Scholarship
 **SPARQL Endpoint**: `https://fuseki.lincsproject.ca/lincs/sparql` (POST)
 **ResearchSpace UI**: `https://rs.lincsproject.ca/`
-**Core Ontology**: CIDOC-CRM v7.3.1
+**Core Ontology**: CIDOC-CRM v7.1.3
 **Extensions**: CRMdig (digital objects), OA Web Annotation Data Model
 
 ## History of Canada Datasets
@@ -74,7 +76,7 @@ Do NOT guess or hallucinate namespace URIs. The exact URIs above are authoritati
 | Languages | Lexvo | `http://lexvo.org/id/iso639-3/{code}` | `lexvo:eng` |
 | Novel entities | LINCS-minted | `http://id.lincsproject.ca/{id}` | `lincs:uHpXmbg9zxY` |
 
-If no external authority exists for an entity, mint a LINCS URI.
+If no external authority exists for an entity, create a temporary fake URI with the prefix `http://temp.lincsproject.ca/`
 
 ## LINCS Controlled Vocabularies (SKOS)
 
@@ -322,9 +324,6 @@ Common historical date qualifiers and their suggested bounds:
 When modeling data for LINCS, verify:
 
 - [ ] Every entity has `rdfs:label`
-- [ ] People use VIAF or Wikidata URIs (or LINCS-minted)
-- [ ] Places use GeoNames URIs
-- [ ] Types use Wikidata or LINCS vocabulary URIs
 - [ ] Names use `E33_E41_Linguistic_Appellation` with `P190_has_symbolic_content`
 - [ ] Dates use `E52_Time-Span` with P82, P82a, P82b
 - [ ] Events connect to places via `P7_took_place_at`

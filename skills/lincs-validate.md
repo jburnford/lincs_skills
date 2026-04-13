@@ -23,6 +23,7 @@ Check that:
 - CRMdig classes (D1_Digital_Object) use `crmdig:` prefix
 - OA Annotation classes use `oa:` prefix
 - No invented property names that aren't in any CRM spec (e.g., `PLACE_LINEAGE`, `SPLIT_FROM`)
+- Don't use inverse CIDOC CRM properties.
 
 
 ### Category 2: Authority URIs
@@ -39,11 +40,14 @@ Check that:
 
 Check that every entity has:
 - `rdfs:label` (human-readable label, language-tagged)
+    - Where possible, include English and French labels, add language tags to all labels and literals (e.g. `"label"@en`).
 - `rdf:type` (explicit class declaration)
+
 
 All E42_Identifier and E33_E41_Linguistic_Appellation should have a P190_has_symbolic_content:
 - `crm:P1_is_identified_by` → `crm:E33_E41_Linguistic_Appellation` or `crm:E42_Identifier`
 - String value via `crm:P190_has_symbolic_content`
+
 
 ### Category 4: Temporal Modeling
 
