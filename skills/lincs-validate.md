@@ -207,6 +207,47 @@ Check every triple against the LINCS Property Reference Table. This is the most 
 - A class is used that is not in the approved LINCS list.
 
 
+### Category 13: No Deprecated Classes or Properties
+
+Check that no deprecated classes or properties are used. 
+
+| Deprecated Class | Migration Instruction |
+|------------------|-----------------------|
+| E38_Image | use E36_Visual_Item |
+| E40_Legal_Body | use E74_Group |
+| E44_Place_Appellation | use E41_Appellation |
+| E45_Address | use E41_Appellation, P2 has type: “Address” |
+| E46_Section_Definition | use E41_Appellation |
+| E47_Spatial_Coordinates | use E94_Space_Primitive |
+| E48_Place_Name | use E41_Appellation |
+| E49_Time_Appellation | use E41_Appellation |
+| E50_Date | use E61_Time_Primitive |
+| E51_Contact_Point | use E41_Appellation, P2 has type: “Contact Point” |
+| E75_Conceptual_Object_Appellation | use E41_Appellation |
+| E82_Actor_Appellation | use E41_Appellation |
+| E84_Information_Carrier | use E22_Human-Made_Object, P2 has type: “Information Carrier” |
+
+**Deprecated Properties**:
+- P58_has_section_definition
+- P78_is_identified_by
+- P88_consists_of
+- P83_had_at_least_duration
+- P84_had_at_most_duration
+- P87_is_identified_by
+- P114_is_equal_in_time_to
+- P115_finishes
+- P116_starts 
+- P117_occurs_during
+- P118_overlaps_in_time_with
+- P119_meets_in_time_with
+- P120_occurs_before 
+- P131_is_identified_by
+- P149_is_identified_by
+- P178_ends_after_or_with
+- P181_has_amount
+
+**FAIL if**: Any deprecated class or property is used.
+
 ### Output Format
 
 ```
