@@ -23,6 +23,9 @@ Check that:
 - CRMdig classes (D1_Digital_Object) use `crmdig:` prefix
 - OA Annotation classes use `oa:` prefix
 - No invented property names that aren't in any CRM spec (e.g., `PLACE_LINEAGE`, `SPLIT_FROM`)
+- Don't use inverse CIDOC CRM properties.
+
+**FAIL if**: Any of the above conditions are not met.
 
 
 ### Category 2: Authority URIs
@@ -39,11 +42,14 @@ Check that:
 
 Check that every entity has:
 - `rdfs:label` (human-readable label, language-tagged)
+    - Where possible, include English and French labels, add language tags to all labels and literals (e.g. `"label"@en`).
 - `rdf:type` (explicit class declaration)
+
 
 All E42_Identifier and E33_E41_Linguistic_Appellation should have a P190_has_symbolic_content:
 - `crm:P1_is_identified_by` → `crm:E33_E41_Linguistic_Appellation` or `crm:E42_Identifier`
 - String value via `crm:P190_has_symbolic_content`
+
 
 ### Category 4: Temporal Modeling
 
@@ -187,6 +193,59 @@ The `[ ... ]` syntax creates an anonymous blank node that cannot be referenced e
 **FAIL if**: Any blank node (including intermediate nodes for time-spans, dimensions, presences, or attribute assignments) appears in the RDF.
 **Remediation**: Mint a URI for every intermediate node using your projects namespace URI (e.g., `temp.lincsproject.ca/montreal/population/dimension/westmeath`). Use a consistent URI scheme (e.g., `temp.lincsproject.ca/{dataset}/{types}`). 
 
+### Category 12: Incorrect Domain/Range
+
+Check every triple against the LINCS Property Reference Table. This is the most critical check to ontological correctness.
+
+**FAIL if**:
+- The Subject is not an instance of the property's defined Domain or one of its subclasses.
+- The Object is not an instance of the property's defined Range or one of its subclasses.
+
+**WARN if**:
+- A property is used that is not in the approved LINCS list.
+- A class is used that is not in the approved LINCS list.
+
+
+### Category 13: No Deprecated Classes or Properties
+
+Check that no deprecated classes or properties are used. 
+
+| Deprecated Class | Migration Instruction |
+|------------------|-----------------------|
+| E38_Image | use E36_Visual_Item |
+| E40_Legal_Body | use E74_Group |
+| E44_Place_Appellation | use E41_Appellation |
+| E45_Address | use E41_Appellation, P2 has type: “Address” |
+| E46_Section_Definition | use E41_Appellation |
+| E47_Spatial_Coordinates | use E94_Space_Primitive |
+| E48_Place_Name | use E41_Appellation |
+| E49_Time_Appellation | use E41_Appellation |
+| E50_Date | use E61_Time_Primitive |
+| E51_Contact_Point | use E41_Appellation, P2 has type: “Contact Point” |
+| E75_Conceptual_Object_Appellation | use E41_Appellation |
+| E82_Actor_Appellation | use E41_Appellation |
+| E84_Information_Carrier | use E22_Human-Made_Object, P2 has type: “Information Carrier” |
+
+**Deprecated Properties**:
+- P58_has_section_definition
+- P78_is_identified_by
+- P88_consists_of
+- P83_had_at_least_duration
+- P84_had_at_most_duration
+- P87_is_identified_by
+- P114_is_equal_in_time_to
+- P115_finishes
+- P116_starts 
+- P117_occurs_during
+- P118_overlaps_in_time_with
+- P119_meets_in_time_with
+- P120_occurs_before 
+- P131_is_identified_by
+- P149_is_identified_by
+- P178_ends_after_or_with
+- P181_has_amount
+
+**FAIL if**: Any deprecated class or property is used.
 
 ### Output Format
 
