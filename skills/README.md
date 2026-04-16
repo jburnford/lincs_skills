@@ -13,33 +13,43 @@ Claude Code skills for working with CIDOC-CRM ontology, LINCS (Linked Infrastruc
 | [lincs-sparql.md](lincs-sparql.md) | `/lincs-sparql` | SPARQL query builder — 10 templates for the LINCS Fuseki endpoint plus local census data queries and LINCS↔census bridging queries |
 | [person-disambig.md](person-disambig.md) | `/person-disambig` | Wikidata person disambiguation — match person NER clusters to Wikidata QIDs using the Wikidata MCP server |
 | [place-disambig.md](place-disambig.md) | `/place-disambig` | Wikidata place disambiguation — ground geographic entities, toponyms, and colonial place names to Wikidata QIDs |
+| [canadian-place-grounding.md](canadian-place-grounding.md) | `/canadian-place-grounding` | Canadian place Wikidata grounding — CSDs, townships, parishes, First Nations reserves, rural municipalities with province-specific search strategies |
 
 ## Prerequisites: Wikidata MCP Server
 
-The `person-disambig` skill requires the [mcp-wikidata](https://github.com/zzaebok/mcp-wikidata) MCP server for searching Wikidata entities.
+The disambiguation skills (`person-disambig`, `place-disambig`, `canadian-place-grounding`) require the [official Wikidata MCP server](https://www.wikidata.org/wiki/Wikidata:MCP) for semantic entity search. No API key required.
+
+- **Endpoint**: `https://wd-mcp.wmcloud.org/mcp/`
+- **Documentation**: https://www.wikidata.org/wiki/Wikidata:MCP
+- **Test UI**: https://wd-mcp.wmcloud.org/docs
+- **Hosted by**: Wikimedia Cloud Services
 
 ### Setup
 
-1. **Get a Smithery API key** from [smithery.ai](https://smithery.ai)
+1. **Add the MCP server** from your project directory:
 
-2. **Add the MCP server** to your Claude Code settings (`~/.claude/settings.json` or project-level `.claude/settings.local.json`):
+```bash
+claude mcp add --transport http wikidata https://wd-mcp.wmcloud.org/mcp/
+```
+
+This writes the config to `.claude.json`:
 
 ```json
 {
   "mcpServers": {
-    "mcp-wikidata": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@smithery/cli@latest",
-        "run",
-        "@zzaebok/mcp-wikidata",
-        "--key",
-        "YOUR_SMITHERY_KEY"
-      ]
+    "wikidata": {
+      "type": "http",
+      "url": "https://wd-mcp.wmcloud.org/mcp/"
     }
   }
 }
+```
+
+2. **Restart Claude Code** (the MCP server is discovered at startup):
+
+```
+/exit
+claude
 ```
 
 3. **Allow the MCP tools** in your project settings (`.claude/settings.local.json`):
@@ -49,7 +59,11 @@ The `person-disambig` skill requires the [mcp-wikidata](https://github.com/zzaeb
   "permissions": {
     "allow": [
       "mcp__wikidata__search_items",
-      "mcp__wikidata__get_statements"
+      "mcp__wikidata__get_statements",
+      "mcp__wikidata__get_statement_values",
+      "mcp__wikidata__execute_sparql",
+      "mcp__wikidata__search_properties",
+      "mcp__wikidata__get_instance_and_subclass_hierarchy"
     ]
   }
 }
@@ -59,17 +73,32 @@ The `person-disambig` skill requires the [mcp-wikidata](https://github.com/zzaeb
 
 | Tool | Description |
 |------|-------------|
-| `search_entity(query)` | Find Wikidata entity IDs by name |
-| `search_property(query)` | Find Wikidata property IDs |
-| `get_properties(entity_id)` | Get all properties for an entity |
-| `execute_sparql(sparql_query)` | Run SPARQL queries against Wikidata |
-| `get_metadata(entity_id, language)` | Get label and description for an entity |
+| `mcp__wikidata__search_items(query)` | Hybrid keyword/vector search for Wikidata items |
+| `mcp__wikidata__search_properties(query)` | Search for Wikidata properties |
+| `mcp__wikidata__get_statements(item_id)` | Get all statements (claims) for an entity |
+| `mcp__wikidata__get_statement_values(item_id, property_id)` | Get values for a specific property |
+| `mcp__wikidata__get_instance_and_subclass_hierarchy(item_id)` | Get type hierarchy |
+| `mcp__wikidata__execute_sparql(query)` | Run SPARQL queries against Wikidata |
 
 ### Tips
 
-- **Short, exact name queries work best**: "John Locke" not "John Locke English philosopher empiricism"
-- **The server is intermittent**: if a query returns empty, try shorter phrasing or retry
-- **Send 8-10 parallel queries per batch** for efficiency, but space batches if results start coming back empty
+- **Short, focused queries work best**: "Frontenac County Ontario" not "Frontenac County census division in Ontario province Canada"
+- **The server uses semantic vector search**, so it handles synonyms and context better than the Wikidata REST API (`wbsearchentities`)
+- **No API key needed** — the server is public and hosted by Wikimedia
+- **Rate limit**: ~5 requests/minute. Space batches accordingly for large disambiguation jobs
+- **Send 6-8 parallel queries per batch** for efficiency
+- If a query returns empty, try shorter phrasing or retry
+
+### Comparison with Other Approaches
+
+| Method | Rate Limits | Quality | Auth Required |
+|--------|-------------|---------|---------------|
+| **Wikidata MCP** (recommended) | ~5/min | Semantic search, best results | No |
+| Wikidata REST API (`wbsearchentities`) | Moderate | String similarity only, poor for disambiguation | No |
+| Wikidata SPARQL (`query.wikidata.org`) | Aggressive IP blocking | Structured queries | No |
+| QLever (`qlever.dev/api/wikidata`) | Generous | Good for bulk SPARQL | No |
+
+**Recommendation**: Use MCP for interactive entity disambiguation. Use QLever for bulk SPARQL (batch operations with >50 queries).
 
 ## Usage
 
